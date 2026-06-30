@@ -3,16 +3,18 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="format-detection" content="telephone=no, date=no, address=no, email=no, url=no"/>
 <title>DH E-Paper – TTS Prototype</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; min-height: 100vh; }
+html, body { height: 100%; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
 
 /* ── Shell ── */
 .shell { width: 100%; min-height: 100vh; background: #fff; display: flex; flex-direction: column; }
 @media (max-width: 767px) {
   body { display: flex; justify-content: center; }
-  .shell { width: 393px; overflow: hidden; }
+  .shell { width: 393px; min-height: 100vh; }
 }
 
 /* ── Top nav ── */
@@ -29,7 +31,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; min-he
 .top-nav-right svg { width: 22px; height: 22px; color: #444; cursor: pointer; }
 
 /* ── Article area ── */
-.article-area { flex: 1; overflow-y: auto; padding-bottom: 200px; }
+.article-area { padding-bottom: 200px; }
 .article-inner { max-width: 720px; margin: 0 auto; padding: 0 16px; }
 @media (min-width: 768px) { .article-inner { padding: 0 48px; } }
 .article-headline { font-size: 26px; font-weight: 800; line-height: 1.2; color: #111; padding: 20px 0 16px; }
@@ -62,8 +64,10 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; min-he
   background: #fff; border-top: 1px solid #ddd; box-shadow: 0 -1px 2px rgba(0,0,0,0.1);
   display: flex; align-items: center; justify-content: space-between;
   padding: 6px 20px; z-index: 100;
+  transition: transform 0.3s ease;
 }
 @media (min-width: 768px) { .footer-nav { height: 68px; padding: 6px 100px; } }
+.footer-nav.hidden { transform: translateY(100%); }
 .footer-btn { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; background: none; border: none; padding: 0; }
 .footer-btn svg { width: 24px; height: 24px; color: #444; }
 @media (min-width: 768px) { .footer-btn { width: 32px; height: 32px; } .footer-btn svg { width: 28px; height: 28px; } }
@@ -75,6 +79,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; min-he
 .edge-tab {
   position: fixed;
   right: 0;
+  bottom: 48px;
   width: 34px;
   height: 84px;
   background: rgba(30, 30, 30, 0.95);
@@ -89,6 +94,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; min-he
   align-items: center;
   justify-content: center;
 }
+@media (min-width: 768px) { .edge-tab { bottom: 68px; } }
 .edge-tab.visible { opacity: 1; pointer-events: all; }
 .edge-tab:hover { transform: translateX(-2px); }
 
@@ -111,7 +117,8 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; min-he
 .edge-wave.playing .bar:nth-child(2) { animation-duration:0.75s; animation-delay:0.10s; }
 .edge-wave.playing .bar:nth-child(3) { animation-duration:0.50s; animation-delay:0.20s; }
 
-/* ── Player bar — now slides in from the LEFT instead of from the bottom ── */
+/* ── Player bar — slides in from the right; position is fixed and never
+     reacts to nav hide/show (Option B) ── */
 .player-bar {
   position: fixed; bottom: 48px; left: 0; right: 0;
   background: rgba(0,0,0,0.8); z-index: 98;
@@ -584,7 +591,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; min-he
   </div>
 
   <!-- FOOTER NAV -->
-  <div class="footer-nav">
+  <div class="footer-nav" id="footerNav">
     <button class="footer-btn"><span style="font-size:17px;font-weight:700;color:#444;">A-</span></button>
     <button class="footer-btn"><span style="font-size:19px;font-weight:700;color:#444;">A+</span></button>
     <button class="footer-btn">
@@ -620,6 +627,20 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; min-he
   let speed    = 1;
   let timer    = null;
   let articleHadPlayer = false;
+
+  /* ── Nav auto-hide on scroll (independent of player — player never moves) ──
+     body/window is the single scroll container on both mobile and desktop now. */
+  let lastScrollY = 0;
+  function updateNavOnScroll(scrollTop) {
+    const nav = document.getElementById('footerNav');
+    if (scrollTop > lastScrollY && scrollTop > 40) {
+      nav.classList.add('hidden');    // scrolling down → hide nav
+    } else if (scrollTop < lastScrollY) {
+      nav.classList.remove('hidden'); // scrolling up → show nav
+    }
+    lastScrollY = scrollTop;
+  }
+  window.addEventListener('scroll', () => updateNavOnScroll(window.scrollY));
 
   function switchPage(p) {
     page = p;
@@ -760,16 +781,16 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; min-he
     const playerBar = document.getElementById('playerBar');
     const tab = document.getElementById('edgeTab');
     const barRect = playerBar.getBoundingClientRect();
-    const barHeight = barRect.height || 110;     // fallback if not yet rendered
-    const barBottomOffset = window.innerHeight - barRect.bottom; // distance from viewport bottom to player bar's bottom edge
-    const tabHeight = 84;
+    const barHeight = barRect.height || 110;
+    // player bar's bottom edge distance from viewport bottom (its fixed `bottom` CSS value)
+    const barBottomOffset = window.innerHeight - barRect.bottom;
+    const tabHeight = tab.getBoundingClientRect().height || 84;
     const centeredBottom = barBottomOffset + (barHeight - tabHeight) / 2;
     tab.style.bottom = Math.max(0, centeredBottom) + 'px';
   }
-  window.addEventListener('resize', () => { if (document.getElementById('edgeTab').classList.contains('visible')) positionEdgeTab(); });
 
   function showPlayer()    { document.getElementById('playerBar').classList.add('visible'); document.getElementById('edgeTab').classList.remove('visible'); }
-  function collapsePlayer(){ if(state==='playing'||state==='paused') positionEdgeTab(); document.getElementById('playerBar').classList.remove('visible'); if(state==='playing'||state==='paused') { document.getElementById('edgeTab').classList.add('visible'); } }
+  function collapsePlayer(){ positionEdgeTab(); document.getElementById('playerBar').classList.remove('visible'); if(state==='playing'||state==='paused') { document.getElementById('edgeTab').classList.add('visible'); } }
   function expandPlayer()  { document.getElementById('edgeTab').classList.remove('visible'); document.getElementById('playerBar').classList.add('visible'); }
   function closePlayer()   { state='closed'; stopTimer(); curSec=0; articleHadPlayer=false; hideAllBars(); document.getElementById('playerBar').classList.remove('visible'); document.getElementById('edgeTab').classList.remove('visible'); syncAll(); syncProgress(); }
   function hideAllBars()   { document.getElementById('errorBar').classList.remove('visible'); document.getElementById('offlineBar').classList.remove('visible'); }
