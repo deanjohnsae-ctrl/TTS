@@ -323,6 +323,34 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.07);
 }
+.progress-wave {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  width: 20px;
+  height: 14px;
+  flex-shrink: 0;
+}
+.progress-wave .bar {
+  width: 2px;
+  background: #1f8fdc;
+  border-radius: 2px;
+}
+.progress-wave .bar:nth-child(1) { height: 5px; }
+.progress-wave .bar:nth-child(2) { height: 10px; }
+.progress-wave .bar:nth-child(3) { height: 7px; }
+.progress-wave .bar:nth-child(4) { height: 12px; }
+.progress-wave.playing .bar,
+.progress-wave.buffering .bar { animation: eq-mini 0.8s ease-in-out infinite alternate; }
+.progress-wave.playing .bar:nth-child(1),
+.progress-wave.buffering .bar:nth-child(1) { animation-duration:0.60s; animation-delay:0.00s; }
+.progress-wave.playing .bar:nth-child(2),
+.progress-wave.buffering .bar:nth-child(2) { animation-duration:0.75s; animation-delay:0.10s; }
+.progress-wave.playing .bar:nth-child(3),
+.progress-wave.buffering .bar:nth-child(3) { animation-duration:0.50s; animation-delay:0.20s; }
+.progress-wave.playing .bar:nth-child(4),
+.progress-wave.buffering .bar:nth-child(4) { animation-duration:0.90s; animation-delay:0.05s; }
+.progress-wave.buffering .bar { opacity: 0.45; }
 .mobile-right {
   gap: 8px;
 }
@@ -353,6 +381,28 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
   }
   .player-title-row {
     padding: 14px 14px 10px;
+  }
+}
+.loading-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 12px 12px;
+}
+.loading-skeleton-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.loading-skeleton-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+@media (min-width: 768px) {
+  .loading-skeleton {
+    padding: 0 14px 14px;
   }
 }
 
@@ -473,38 +523,50 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
       </div>
 
       <!-- MOBILE skeleton -->
-      <div class="mobile-controls">
-        <div style="width:66px;height:66px;border-radius:16px;background:#504f4f;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
-          <div style="width:32px;height:32px;border:3px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+      <div class="mobile-controls loading-skeleton">
+        <div class="loading-skeleton-top">
+          <div class="shimmer sk-pill" style="height:16px;width:72%;"></div>
+          <div class="shimmer sk-circle" style="width:30px;height:30px;"></div>
         </div>
-        <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
-          <div style="display:flex;align-items:center;gap:14px;">
-            <div class="shimmer sk-circle" style="width:32px;height:32px;"></div>
-            <div class="shimmer sk-circle" style="width:44px;height:44px;"></div>
-            <div class="shimmer sk-circle" style="width:32px;height:32px;"></div>
-            <div class="shimmer sk-pill"   style="width:52px;height:32px;"></div>
-            <div class="shimmer sk-circle" style="width:32px;height:32px;"></div>
+        <div class="progress-row">
+          <div class="shimmer sk-bar" style="width:22px;"></div>
+          <div class="shimmer sk-bar" style="flex:1;"></div>
+          <div class="shimmer sk-bar" style="width:28px;"></div>
+        </div>
+        <div class="loading-skeleton-actions">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="shimmer sk-circle" style="width:26px;height:26px;"></div>
+            <div class="shimmer sk-circle" style="width:42px;height:42px;"></div>
+            <div class="shimmer sk-circle" style="width:26px;height:26px;"></div>
           </div>
-          <div class="shimmer sk-bar"></div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="shimmer sk-pill" style="width:44px;height:28px;"></div>
+            <div class="shimmer sk-circle" style="width:28px;height:28px;"></div>
+          </div>
         </div>
       </div>
 
       <!-- DESKTOP skeleton — mirrors desktop-controls single row -->
-      <div class="desktop-controls">
-        <div style="width:66px;height:66px;border-radius:16px;background:#504f4f;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
-          <div style="width:32px;height:32px;border:3px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
-        </div>
-        <div class="transport">
-          <div class="shimmer sk-circle" style="width:28px;height:28px;"></div>
-          <div class="shimmer sk-circle" style="width:44px;height:44px;"></div>
-          <div class="shimmer sk-circle" style="width:28px;height:28px;"></div>
+      <div class="desktop-controls loading-skeleton">
+        <div class="loading-skeleton-top">
+          <div class="shimmer sk-pill" style="height:16px;width:68%;"></div>
+          <div class="shimmer sk-circle" style="width:30px;height:30px;"></div>
         </div>
         <div class="progress-row">
+          <div class="shimmer sk-bar" style="width:22px;"></div>
           <div class="shimmer sk-bar" style="flex:1;"></div>
+          <div class="shimmer sk-bar" style="width:28px;"></div>
         </div>
-        <div class="side-controls">
-          <div class="shimmer sk-pill"   style="width:52px;height:32px;"></div>
-          <div class="shimmer sk-circle" style="width:32px;height:32px;"></div>
+        <div class="loading-skeleton-actions">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="shimmer sk-circle" style="width:26px;height:26px;"></div>
+            <div class="shimmer sk-circle" style="width:42px;height:42px;"></div>
+            <div class="shimmer sk-circle" style="width:26px;height:26px;"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="shimmer sk-pill" style="width:44px;height:28px;"></div>
+            <div class="shimmer sk-circle" style="width:28px;height:28px;"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -520,10 +582,6 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
 
       <!-- MOBILE -->
       <div class="mobile-controls">
-        <div class="audio-icon-box">
-          <div class="bg-img"></div>
-          <div class="audio-wave" id="audioWaveBufM"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-        </div>
         <div class="mobile-right">
           <div class="mobile-top-row">
             <div class="transport">
@@ -540,6 +598,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
           </div>
           <div class="progress-row">
             <span class="time-lbl" id="curTimeBufM">0:00</span>
+            <div class="progress-wave buffering" id="audioWaveBufM"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
             <div class="progress-track">
               <div class="progress-bg"></div>
               <div class="progress-fill" id="pFillBufM"></div>
@@ -552,10 +611,6 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
 
       <!-- DESKTOP -->
       <div class="desktop-controls">
-        <div class="audio-icon-box">
-          <div class="bg-img"></div>
-          <div class="audio-wave" id="audioWaveBufD"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-        </div>
         <div class="transport">
           <button class="ctrl-btn" disabled style="opacity:0.4;"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 5V1l-5 5 5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6h-2c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/><text x="8" y="14.5" font-size="5" fill="white" font-weight="bold" font-family="sans-serif">10</text></svg></button>
           <button class="play-pause-btn" style="cursor:default;">
@@ -565,6 +620,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
         </div>
         <div class="progress-row">
           <span class="time-lbl" id="curTimeBufD">0:00</span>
+          <div class="progress-wave buffering" id="audioWaveBufD"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
           <div class="progress-track">
             <div class="progress-bg"></div>
             <div class="progress-fill" id="pFillBufD"></div>
@@ -591,13 +647,6 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
 
       <!-- MOBILE layout: icon | (buttons row / progress row) -->
       <div class="mobile-controls">
-        <div class="audio-icon-box">
-          <div class="bg-img"></div>
-          <div class="audio-wave" id="audioWaveM">
-            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-          </div>
-        </div>
         <div class="mobile-right">
           <div class="mobile-top-row">
             <div class="transport">
@@ -624,6 +673,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
           </div>
           <div class="progress-row">
             <span class="time-lbl" id="curTimeM">0:00</span>
+            <div class="progress-wave" id="audioWaveM"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
             <div class="progress-track" onclick="seek(event,'m')">
               <div class="progress-bg"></div>
               <div class="progress-fill" id="pFillM"></div>
@@ -636,13 +686,6 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
 
       <!-- DESKTOP layout: single flat row -->
       <div class="desktop-controls">
-        <div class="audio-icon-box">
-          <div class="bg-img"></div>
-          <div class="audio-wave" id="audioWaveD">
-            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-          </div>
-        </div>
         <!-- transport -->
         <div class="transport">
           <button class="ctrl-btn" onclick="rewind()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 5V1l-5 5 5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6h-2c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/><text x="8" y="14.5" font-size="5" fill="white" font-weight="bold" font-family="sans-serif">10</text></svg></button>
@@ -656,6 +699,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
         <!-- progress — stretches to fill remaining space -->
         <div class="progress-row">
           <span class="time-lbl" id="curTimeD">0:00</span>
+          <div class="progress-wave" id="audioWaveD"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
           <div class="progress-track" onclick="seek(event,'d')">
             <div class="progress-bg"></div>
             <div class="progress-fill" id="pFillD"></div>
@@ -931,6 +975,8 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
     const playing=state==='playing';
     document.getElementById('audioWaveM').classList.toggle('playing',playing);
     document.getElementById('audioWaveD').classList.toggle('playing',playing);
+    document.getElementById('audioWaveBufM').classList.toggle('playing',false);
+    document.getElementById('audioWaveBufD').classList.toggle('playing',false);
     document.getElementById('edgeWave').classList.toggle('playing',playing);
   }
 </script>
