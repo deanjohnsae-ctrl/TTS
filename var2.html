@@ -250,25 +250,18 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
 
 /* Left-rail player redesign overrides */
 .player-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(4, 8, 15, 0.68);
-  backdrop-filter: blur(4px);
-  z-index: 97;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
+  display: none;
 }
-.player-backdrop.visible { opacity: 1; pointer-events: auto; }
 .player-bar {
-  left: 18px;
-  right: 18px;
-  bottom: 58px;
-  max-width: 360px;
+  left: 12px;
+  right: auto;
+  bottom: 54px;
+  width: min(300px, calc(100vw - 28px));
+  max-width: 300px;
   background: linear-gradient(180deg, rgba(16,22,31,0.98), rgba(7,11,18,0.98));
   border: 1px solid rgba(124, 170, 214, 0.2);
-  border-radius: 24px;
-  box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+  border-radius: 18px;
+  box-shadow: 0 14px 34px rgba(0,0,0,0.26);
   transform: translateX(-120%);
   opacity: 0;
   overflow: hidden;
@@ -277,13 +270,13 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
 .player-bar.visible { transform: translateX(0); opacity: 1; }
 .player-title-row {
   align-items: flex-start;
-  padding: 18px 18px 10px;
-  gap: 12px;
+  padding: 12px 12px 8px;
+  gap: 10px;
 }
 .player-title {
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.35;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -293,8 +286,8 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
 .collapse-btn {
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.12);
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   justify-content: center;
   flex-shrink: 0;
@@ -302,39 +295,39 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
 .mobile-controls {
   flex-direction: column;
   align-items: stretch;
-  gap: 14px;
-  padding: 0 18px 18px;
+  gap: 10px;
+  padding: 0 12px 12px;
 }
 .desktop-controls {
   flex-direction: column;
   align-items: stretch;
-  gap: 14px;
-  padding: 0 20px 20px;
+  gap: 10px;
+  padding: 0 14px 14px;
 }
 .audio-icon-box {
-  width: 78px;
-  height: 78px;
-  border-radius: 20px;
+  width: 58px;
+  height: 58px;
+  border-radius: 14px;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
 }
-.audio-icon-box .bg-img { border-radius: 20px; }
+.audio-icon-box .bg-img { border-radius: 14px; }
 .play-pause-btn {
-  width: 52px;
-  height: 52px;
-  box-shadow: 0 10px 24px rgba(31,143,220,0.35);
+  width: 42px;
+  height: 42px;
+  box-shadow: 0 8px 18px rgba(31,143,220,0.28);
 }
 .progress-row {
-  gap: 8px;
-  padding: 12px 14px;
-  border-radius: 16px;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 12px;
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.07);
 }
 .mobile-right {
-  gap: 12px;
+  gap: 8px;
 }
 .mobile-top-row {
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 .mobile-controls > .audio-icon-box,
@@ -347,19 +340,19 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.06);
   border-radius: 999px;
-  padding: 10px 14px;
+  padding: 6px 10px;
 }
 .desktop-controls .side-controls { align-self: flex-end; }
 @media (min-width: 768px) {
   .player-bar {
-    left: 28px;
+    left: 18px;
     right: auto;
-    bottom: 92px;
-    width: min(420px, calc(100vw - 72px));
-    max-width: 420px;
+    bottom: 82px;
+    width: min(340px, calc(100vw - 56px));
+    max-width: 340px;
   }
   .player-title-row {
-    padding: 20px 20px 12px;
+    padding: 14px 14px 10px;
   }
 }
 
@@ -907,14 +900,14 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
     tab.style.bottom = Math.max(0, centeredBottom) + 'px';
   }
 
-  function showPlayer()    { document.getElementById('playerBar').classList.add('visible'); document.getElementById('playerBackdrop').classList.add('visible'); document.getElementById('edgeTab').classList.remove('visible'); }
-  function collapsePlayer(){ positionEdgeTab(); document.getElementById('playerBar').classList.remove('visible'); document.getElementById('playerBackdrop').classList.remove('visible'); if(state==='playing'||state==='paused') { document.getElementById('edgeTab').classList.add('visible'); } }
-  function expandPlayer()  { document.getElementById('edgeTab').classList.remove('visible'); document.getElementById('playerBackdrop').classList.add('visible'); document.getElementById('playerBar').classList.add('visible'); }
-  function closePlayer()   { state='closed'; stopTimer(); curSec=0; articleHadPlayer=false; hideAllBars(); document.getElementById('playerBackdrop').classList.remove('visible'); document.getElementById('playerBar').classList.remove('visible'); document.getElementById('edgeTab').classList.remove('visible'); syncAll(); syncProgress(); }
+  function showPlayer()    { document.getElementById('playerBar').classList.add('visible'); document.getElementById('edgeTab').classList.remove('visible'); }
+  function collapsePlayer(){ positionEdgeTab(); document.getElementById('playerBar').classList.remove('visible'); if(state==='playing'||state==='paused') { document.getElementById('edgeTab').classList.add('visible'); } }
+  function expandPlayer()  { document.getElementById('edgeTab').classList.remove('visible'); document.getElementById('playerBar').classList.add('visible'); }
+  function closePlayer()   { state='closed'; stopTimer(); curSec=0; articleHadPlayer=false; hideAllBars(); document.getElementById('playerBar').classList.remove('visible'); document.getElementById('edgeTab').classList.remove('visible'); syncAll(); syncProgress(); }
   function hideAllBars()   { document.getElementById('errorBar').classList.remove('visible'); document.getElementById('offlineBar').classList.remove('visible'); }
 
-  function simulateError()   { stopTimer(); state='error';   document.getElementById('playerBackdrop').classList.remove('visible'); document.getElementById('playerBar').classList.remove('visible'); document.getElementById('edgeTab').classList.remove('visible'); document.getElementById('offlineBar').classList.remove('visible'); document.getElementById('errorBar').classList.add('visible'); syncAll(); }
-  function simulateOffline() { stopTimer(); state='offline'; document.getElementById('playerBackdrop').classList.remove('visible'); document.getElementById('playerBar').classList.remove('visible'); document.getElementById('edgeTab').classList.remove('visible'); document.getElementById('errorBar').classList.remove('visible'); document.getElementById('offlineBar').classList.add('visible'); syncAll(); }
+  function simulateError()   { stopTimer(); state='error';   document.getElementById('playerBar').classList.remove('visible'); document.getElementById('edgeTab').classList.remove('visible'); document.getElementById('offlineBar').classList.remove('visible'); document.getElementById('errorBar').classList.add('visible'); syncAll(); }
+  function simulateOffline() { stopTimer(); state='offline'; document.getElementById('playerBar').classList.remove('visible'); document.getElementById('edgeTab').classList.remove('visible'); document.getElementById('errorBar').classList.remove('visible'); document.getElementById('offlineBar').classList.add('visible'); syncAll(); }
 
   function syncAll() { syncPlayBtn(); syncFooterIcon(); syncWave(); }
 
