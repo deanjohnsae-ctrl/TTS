@@ -273,15 +273,33 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
   padding: 12px 12px 8px;
   gap: 10px;
 }
-.player-title {
+.player-title-viewport {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+}
+.player-title-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 28px;
+  white-space: nowrap;
+  will-change: transform;
+}
+.player-title-text {
   font-size: 14px;
   font-weight: 600;
   line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  white-space: normal;
+  color: #fff;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.player-title-viewport.marquee-active .player-title-track {
+  animation: player-marquee var(--marquee-duration, 12s) linear infinite;
+}
+@keyframes player-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-1 * var(--marquee-distance, 0px))); }
 }
 .collapse-btn {
   background: rgba(255,255,255,0.06);
@@ -574,7 +592,12 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
     <!-- LOADING IN-BETWEEN STATE (re-buffering mid-playback — controls stay visible, only play btn spins) -->
     <div id="bufferingState" style="display:none;">
       <div class="player-title-row">
-        <span class="player-title">12 Indians among 13 killed in explosion at Qatar factory</span>
+        <div class="player-title-viewport" data-marquee>
+          <div class="player-title-track">
+            <span class="player-title-text">12 Indians among 13 killed in explosion at Qatar factory</span>
+            <span class="player-title-text player-title-duplicate" aria-hidden="true">12 Indians among 13 killed in explosion at Qatar factory</span>
+          </div>
+        </div>
         <button class="collapse-btn" onclick="collapsePlayer()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg>
         </button>
@@ -639,7 +662,12 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
     <div id="activeState" style="display:none;">
       <!-- Title row -->
       <div class="player-title-row">
-        <span class="player-title">12 Indians among 13 killed in explosion at Qatar factory</span>
+        <div class="player-title-viewport" data-marquee>
+          <div class="player-title-track">
+            <span class="player-title-text">12 Indians among 13 killed in explosion at Qatar factory</span>
+            <span class="player-title-text player-title-duplicate" aria-hidden="true">12 Indians among 13 killed in explosion at Qatar factory</span>
+          </div>
+        </div>
         <button class="collapse-btn" onclick="collapsePlayer()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg>
         </button>
@@ -932,6 +960,30 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
     ['M','D'].forEach(s=>document.getElementById('speedMenu'+s).classList.remove('open'));
   });
 
+  function syncTitleMarquee() {
+    document.querySelectorAll('[data-marquee]').forEach(viewport => {
+      const track = viewport.querySelector('.player-title-track');
+      const texts = viewport.querySelectorAll('.player-title-text');
+      if (!track || texts.length < 2) return;
+
+      const primaryWidth = texts[0].scrollWidth;
+      const viewportWidth = viewport.clientWidth;
+      const shouldScroll = primaryWidth > viewportWidth + 4;
+
+      viewport.classList.toggle('marquee-active', shouldScroll);
+      texts[1].style.display = shouldScroll ? 'inline' : 'none';
+
+      if (shouldScroll) {
+        const gap = 28;
+        viewport.style.setProperty('--marquee-distance', (primaryWidth + gap) + 'px');
+        viewport.style.setProperty('--marquee-duration', Math.max(8, primaryWidth / 22) + 's');
+      } else {
+        viewport.style.removeProperty('--marquee-distance');
+        viewport.style.removeProperty('--marquee-duration');
+      }
+    });
+  }
+
   function positionEdgeTab() {
     const playerBar = document.getElementById('playerBar');
     const tab = document.getElementById('edgeTab');
@@ -944,9 +996,9 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
     tab.style.bottom = Math.max(0, centeredBottom) + 'px';
   }
 
-  function showPlayer()    { document.getElementById('playerBar').classList.add('visible'); document.getElementById('edgeTab').classList.remove('visible'); }
+  function showPlayer()    { document.getElementById('playerBar').classList.add('visible'); document.getElementById('edgeTab').classList.remove('visible'); requestAnimationFrame(syncTitleMarquee); }
   function collapsePlayer(){ positionEdgeTab(); document.getElementById('playerBar').classList.remove('visible'); if(state==='playing'||state==='paused') { document.getElementById('edgeTab').classList.add('visible'); } }
-  function expandPlayer()  { document.getElementById('edgeTab').classList.remove('visible'); document.getElementById('playerBar').classList.add('visible'); }
+  function expandPlayer()  { document.getElementById('edgeTab').classList.remove('visible'); document.getElementById('playerBar').classList.add('visible'); requestAnimationFrame(syncTitleMarquee); }
   function closePlayer()   { state='closed'; stopTimer(); curSec=0; articleHadPlayer=false; hideAllBars(); document.getElementById('playerBar').classList.remove('visible'); document.getElementById('edgeTab').classList.remove('visible'); syncAll(); syncProgress(); }
   function hideAllBars()   { document.getElementById('errorBar').classList.remove('visible'); document.getElementById('offlineBar').classList.remove('visible'); }
 
@@ -979,6 +1031,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
     document.getElementById('audioWaveBufD').classList.toggle('playing',false);
     document.getElementById('edgeWave').classList.toggle('playing',playing);
   }
+  window.addEventListener('resize', syncTitleMarquee);
 </script>
 </body>
 </html>
