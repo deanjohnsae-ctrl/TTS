@@ -264,13 +264,13 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
   box-shadow: 0 14px 34px rgba(0,0,0,0.26);
   transform: translateX(-120%);
   opacity: 0;
-  overflow: hidden;
+  overflow: visible;
   transition: transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease;
 }
 .player-bar.visible { transform: translateX(0); opacity: 1; }
 .player-title-row {
   align-items: flex-start;
-  padding: 12px 12px 8px;
+  padding: 12px 12px 8px 12px;
   gap: 10px;
 }
 .player-title-viewport {
@@ -301,6 +301,25 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
   0% { transform: translateX(0); }
   100% { transform: translateX(calc(-1 * var(--marquee-distance, 0px))); }
 }
+.player-open-handle {
+  position: absolute;
+  top: 14px;
+  right: -26px;
+  width: 34px;
+  height: 82px;
+  background: rgba(30, 30, 30, 0.95);
+  border: none;
+  border-radius: 0 18px 18px 0;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.22);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  z-index: 2;
+}
+.player-open-handle:hover { transform: translateX(2px); }
+.player-open-handle svg { width: 14px; height: 14px; }
 .collapse-btn {
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.12);
@@ -399,6 +418,11 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
   }
   .player-title-row {
     padding: 14px 14px 10px;
+  }
+  .player-open-handle {
+    top: 16px;
+    right: -28px;
+    height: 86px;
   }
 }
 .loading-skeleton {
@@ -535,9 +559,6 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
     <div id="loadingState">
       <div class="player-title-row">
         <span style="font-size:14px;font-weight:500;color:#fff;">Loading the audio...</span>
-        <button class="collapse-btn" onclick="collapsePlayer()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg>
-        </button>
       </div>
 
       <!-- MOBILE skeleton -->
@@ -598,9 +619,6 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
             <span class="player-title-text player-title-duplicate" aria-hidden="true">12 Indians among 13 killed in explosion at Qatar factory</span>
           </div>
         </div>
-        <button class="collapse-btn" onclick="collapsePlayer()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg>
-        </button>
       </div>
 
       <!-- MOBILE -->
@@ -668,9 +686,6 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
             <span class="player-title-text player-title-duplicate" aria-hidden="true">12 Indians among 13 killed in explosion at Qatar factory</span>
           </div>
         </div>
-        <button class="collapse-btn" onclick="collapsePlayer()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg>
-        </button>
       </div>
 
       <!-- MOBILE layout: icon | (buttons row / progress row) -->
@@ -750,6 +765,9 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
         </div>
       </div>
     </div>
+    <button class="player-open-handle" onclick="collapsePlayer()" aria-label="Collapse player">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
   </div>
 
   <!-- ERROR BAR -->
