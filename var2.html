@@ -303,7 +303,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
 }
 .player-open-handle {
   position: absolute;
-  top: 14px;
+  top: 50%;
   right: -26px;
   width: 34px;
   height: 82px;
@@ -317,8 +317,10 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
   justify-content: center;
   color: #fff;
   z-index: 2;
+  transform: translateY(-50%);
+  transition: margin-right 0.2s ease;
 }
-.player-open-handle:hover { transform: translateX(2px); }
+.player-open-handle:hover { margin-right: -2px; }
 .player-open-handle svg { width: 14px; height: 14px; }
 .collapse-btn {
   background: rgba(255,255,255,0.06);
@@ -420,7 +422,6 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
     padding: 14px 14px 10px;
   }
   .player-open-handle {
-    top: 16px;
     right: -28px;
     height: 86px;
   }
