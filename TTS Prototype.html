@@ -217,10 +217,10 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
 .progress-row { display:flex; align-items:center; gap:6px; flex:1; min-width:0; }
 .time-lbl { font-size:11px; color:#fff; white-space:nowrap; min-width:28px; flex-shrink:0; }
 .time-lbl.end { text-align:right; }
-.progress-track { flex:1; position:relative; height:12px; display:flex; align-items:center; cursor:pointer; min-width:0; }
+.progress-track { flex:1; position:relative; height:12px; display:flex; align-items:center; cursor:pointer; min-width:0; touch-action:none; }
 .progress-bg   { position:absolute; left:0; right:0; height:3px; background:#616366; border-radius:2px; }
-.progress-fill { position:absolute; left:0; height:3px; background:#1f8fdc; border-radius:2px; width:0%; transition:width 1s linear; }
-.progress-dot  { position:absolute; width:12px; height:12px; background:#fff; border-radius:50%; top:50%; transform:translate(-50%,-50%); left:0%; transition:left 1s linear; box-shadow:0 0 3px rgba(0,0,0,0.4); pointer-events:none; }
+.progress-fill { position:absolute; left:0; height:3px; background:#1f8fdc; border-radius:2px; width:0%; transition:width 0.25s linear; }
+.progress-dot  { position:absolute; width:12px; height:12px; background:#fff; border-radius:50%; top:50%; transform:translate(-50%,-50%); left:0%; transition:left 0.25s linear; box-shadow:0 0 3px rgba(0,0,0,0.4); pointer-events:none; }
 
 /* ── Buffering state visual cues ── */
 .audio-wave.buffering .bar { opacity: 0.35; animation: none !important; }
@@ -299,10 +299,10 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
   100% { transform: translateX(calc(-1 * var(--marquee-distance, 0px))); }
 }
 .collapse-btn {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12);
-  width: 30px;
-  height: 30px;
+  background: none;
+  border: 1.5px solid rgba(255,255,255,0.4);
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   justify-content: center;
   flex-shrink: 0;
@@ -436,21 +436,17 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
 @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 .sk-circle{border-radius:50%;} .sk-pill{border-radius:8px;} .sk-bar{border-radius:4px;height:7px;width:100%;}
 
-/* ── Error / Offline bars ── */
-.error-bar, .offline-bar {
+/* ── Status toast (shared by any failure: error, offline, etc.) ── */
+.status-toast {
   display:none; position:fixed; bottom:48px; left:0; right:0; height:64px;
-  align-items:center; justify-content:space-between; padding:0 16px; gap:8px; z-index:97;
+  align-items:center; justify-content:center; padding:0 16px; gap:8px; z-index:97;
+  background:rgba(30,30,30,0.95);
 }
-@media (min-width:768px) { .error-bar,.offline-bar { bottom:68px; padding:0 72px; } }
-.error-bar { background:rgba(49,19,22,0.95); }
-.offline-bar { background:rgba(0,0,0,0.85); }
-.error-bar.visible, .offline-bar.visible { display:flex; }
+@media (min-width:768px) { .status-toast { bottom:68px; padding:0 72px; } }
+.status-toast.visible { display:flex; }
 .bar-left { display:flex; align-items:center; gap:6px; }
-.bar-left svg { width:22px; height:22px; flex-shrink:0; }
-.error-bar .bar-left svg { color:#f5a623; }
-.offline-bar .bar-left svg { color:#fff; }
+.bar-left svg { width:22px; height:22px; flex-shrink:0; color:#f5a623; }
 .bar-left span { font-size:14px; color:#fff; font-weight:500; }
-.retry-btn { background:#b82832; border:1px solid #b82832; border-radius:16px; padding:6px 14px; color:#fff; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap; }
 
 /* ── Demo panel ── */
 .demo-panel { position:fixed; top:12px; right:12px; background:rgba(0,0,0,0.78); border-radius:10px; padding:10px 12px; z-index:999; display:flex; flex-direction:column; gap:6px; }
@@ -679,6 +675,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
               <button class="play-pause-btn" id="playPauseBtnM" onclick="togglePlay()">
                 <svg id="iconPlayM"  viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
                 <svg id="iconPauseM" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                <svg id="iconReplayM" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><path d="M11.99 5V1l-5 5 5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6h-2c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
                 <div class="btn-spinner" id="btnSpinnerM"></div>
               </button>
               <button class="ctrl-btn" onclick="forward()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/><text x="8" y="14.5" font-size="5" fill="white" font-weight="bold" font-family="sans-serif">10</text></svg></button>
@@ -691,7 +688,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
           <div class="progress-row">
             <span class="time-lbl" id="curTimeM">0:00</span>
             <div class="progress-wave" id="audioWaveM"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-            <div class="progress-track" onclick="seek(event,'m')">
+            <div class="progress-track" onpointerdown="startSeekDrag(event,'m')">
               <div class="progress-bg"></div>
               <div class="progress-fill" id="pFillM"></div>
               <div class="progress-dot"  id="pDotM"></div>
@@ -710,6 +707,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
           <button class="play-pause-btn" id="playPauseBtnD" onclick="togglePlay()">
             <svg id="iconPlayD"  viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
             <svg id="iconPauseD" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+            <svg id="iconReplayD" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><path d="M11.99 5V1l-5 5 5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6h-2c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
             <div class="btn-spinner" id="btnSpinnerD"></div>
           </button>
           <button class="ctrl-btn" onclick="forward()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/><text x="8" y="14.5" font-size="5" fill="white" font-weight="bold" font-family="sans-serif">10</text></svg></button>
@@ -718,7 +716,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
         <div class="progress-row">
           <span class="time-lbl" id="curTimeD">0:00</span>
           <div class="progress-wave" id="audioWaveD"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-          <div class="progress-track" onclick="seek(event,'d')">
+          <div class="progress-track" onpointerdown="startSeekDrag(event,'d')">
             <div class="progress-bg"></div>
             <div class="progress-fill" id="pFillD"></div>
             <div class="progress-dot"  id="pDotD"></div>
@@ -734,25 +732,14 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
     </div>
   </div>
 
-  <!-- ERROR BAR -->
-  <div class="error-bar" id="errorBar">
+  <audio id="audioEl" src="sigmamusicart-no-copyright-music-537751.mp3" preload="metadata"></audio>
+
+  <!-- STATUS TOAST: shared message for any failure (error, offline, etc.) -->
+  <div class="status-toast" id="statusToast">
     <div class="bar-left">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <span>Playback error. Please try again</span>
+      <span>Something went wrong. Try again.</span>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <button class="retry-btn" onclick="retryPlay()">Retry</button>
-      <button class="close-btn" onclick="closePlayer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-  </div>
-
-  <!-- OFFLINE BAR -->
-  <div class="offline-bar" id="offlineBar">
-    <div class="bar-left">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.56 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
-      <span>You're offline. Audio unavailable.</span>
-    </div>
-    <button class="close-btn" onclick="closePlayer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
 
   <!-- FOOTER NAV -->
@@ -788,12 +775,22 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
   let state    = 'closed';
   let page     = 'article';
   let curSec   = 0;
-  const totSec = 166;
+  let totSec   = 166; // fallback until the real track's duration loads
   let speed    = 1;
   let timer    = null;
   let articleHadPlayer = false;
   const SPEEDS = [1, 1.5, 2, 0.5];
   const SPEED_LABELS = {1:'1×', 1.5:'1.5×', 2:'2×', 0.5:'0.5×'};
+
+  const audioEl = document.getElementById('audioEl');
+  audioEl.addEventListener('loadedmetadata', () => {
+    totSec = audioEl.duration || totSec;
+    document.querySelectorAll('.time-lbl.end').forEach(el => el.textContent = fmt(totSec));
+  });
+  audioEl.addEventListener('timeupdate', () => { curSec = audioEl.currentTime; syncProgress(); });
+  audioEl.addEventListener('ended', () => { curSec = totSec; state = 'ended'; syncProgress(); syncAll(); });
+  audioEl.addEventListener('playing', () => { if (state === 'loading') startPlaying(); });
+  audioEl.addEventListener('error', () => { if (state !== 'closed') simulateError(); });
 
   /* ── Nav auto-hide on scroll (independent of player — player never moves) ──
      body/window is the single scroll container on both mobile and desktop now. */
@@ -815,14 +812,14 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
     document.getElementById('otherPage').classList.toggle('active', p !== 'article');
     document.getElementById('dBtnArticle').classList.toggle('active', p === 'article');
     document.getElementById('dBtnOther').classList.toggle('active', p !== 'article');
-    if (p === 'other' && (state==='playing'||state==='paused')) collapsePlayer();
-    if (p === 'article' && articleHadPlayer && (state==='playing'||state==='paused')) expandPlayer();
+    if (p === 'other' && (state==='playing'||state==='paused'||state==='ended')) collapsePlayer();
+    if (p === 'article' && articleHadPlayer && (state==='playing'||state==='paused'||state==='ended')) expandPlayer();
   }
   function goToArticle() { switchPage('article'); }
 
   function handleTtsTap() {
     if (state==='closed') startLoading();
-    else if (state==='playing'||state==='paused') togglePlay();
+    else if (state==='playing'||state==='paused'||state==='ended') togglePlay();
   }
 
   function startLoading() {
@@ -832,9 +829,11 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
     document.getElementById('bufferingState').style.display='none';
     document.getElementById('activeState').style.display='none';
     showPlayer(); syncFooterIcon();
-    setTimeout(startPlaying, 2000);
+    curSec = 0;
+    audioEl.currentTime = 0;
+    audioEl.playbackRate = speed;
+    audioEl.play().catch(()=>{ simulateError(); });
   }
-  function retryPlay() { startLoading(); }
 
   function startPlaying() {
     state='playing';
@@ -894,18 +893,12 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
   function togglePlay() {
     if (state==='playing') { state='paused'; stopTimer(); }
     else if (state==='paused') { state='playing'; startTimer(); }
+    else if (state==='ended') { curSec=0; audioEl.currentTime=0; state='playing'; startTimer(); syncProgress(true); }
     syncAll();
   }
 
-  function startTimer() {
-    stopTimer();
-    timer = setInterval(()=>{
-      curSec += speed;
-      if (curSec >= totSec) { curSec=totSec; state='paused'; stopTimer(); syncAll(); }
-      syncProgress();
-    }, 1000);
-  }
-  function stopTimer() { clearInterval(timer); timer=null; }
+  function startTimer() { audioEl.playbackRate = speed; audioEl.play().catch(()=>{}); }
+  function stopTimer() { audioEl.pause(); }
 
   function syncProgress(instant) {
     const pct = (curSec/totSec)*100;
@@ -929,13 +922,29 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
   function seek(e, suffix) {
     const rect = e.currentTarget.getBoundingClientRect();
     curSec = Math.max(0, Math.min(totSec, ((e.clientX-rect.left)/rect.width)*totSec));
+    audioEl.currentTime = curSec;
     syncProgress(true);
   }
-  function rewind()  { curSec=Math.max(0,curSec-10); syncProgress(true); }
-  function forward() { curSec=Math.min(totSec,curSec+10); syncProgress(true); }
+  function startSeekDrag(e, suffix) {
+    const track = e.currentTarget;
+    track.setPointerCapture(e.pointerId);
+    seek(e, suffix);
+    const onMove = (ev) => seek(ev, suffix);
+    const onUp = () => {
+      track.removeEventListener('pointermove', onMove);
+      track.removeEventListener('pointerup', onUp);
+      track.removeEventListener('pointercancel', onUp);
+    };
+    track.addEventListener('pointermove', onMove);
+    track.addEventListener('pointerup', onUp);
+    track.addEventListener('pointercancel', onUp);
+  }
+  function rewind()  { curSec=Math.max(0,curSec-10); audioEl.currentTime=curSec; syncProgress(true); }
+  function forward() { curSec=Math.min(totSec,curSec+10); audioEl.currentTime=curSec; syncProgress(true); }
 
   function cycleSpeed() {
     speed = SPEEDS[(SPEEDS.indexOf(speed) + 1) % SPEEDS.length];
+    audioEl.playbackRate = speed;
     ['M','D'].forEach(id=>{
       document.getElementById('speedPill'+id).textContent = SPEED_LABELS[speed];
     });
@@ -978,27 +987,39 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
   }
 
   function showPlayer()    { document.getElementById('playerBar').classList.add('visible'); document.getElementById('edgeTab').classList.remove('visible'); requestAnimationFrame(syncTitleMarquee); }
-  function collapsePlayer(){ positionEdgeTab(); document.getElementById('playerBar').classList.remove('visible'); if(state==='playing'||state==='paused') { document.getElementById('edgeTab').classList.add('visible'); } }
+  function collapsePlayer(){ positionEdgeTab(); document.getElementById('playerBar').classList.remove('visible'); if(state==='playing'||state==='paused'||state==='ended') { document.getElementById('edgeTab').classList.add('visible'); } }
   function expandPlayer()  { document.getElementById('edgeTab').classList.remove('visible'); document.getElementById('playerBar').classList.add('visible'); requestAnimationFrame(syncTitleMarquee); }
-  function closePlayer()   { state='closed'; stopTimer(); curSec=0; articleHadPlayer=false; hideAllBars(); document.getElementById('playerBar').classList.remove('visible'); document.getElementById('edgeTab').classList.remove('visible'); syncAll(); syncProgress(); }
-  function hideAllBars()   { document.getElementById('errorBar').classList.remove('visible'); document.getElementById('offlineBar').classList.remove('visible'); }
+  function closePlayer()   { state='closed'; stopTimer(); curSec=0; audioEl.currentTime=0; articleHadPlayer=false; hideAllBars(); document.getElementById('playerBar').classList.remove('visible'); document.getElementById('edgeTab').classList.remove('visible'); syncAll(); syncProgress(); }
+  function hideAllBars()   { document.getElementById('statusToast').classList.remove('visible'); }
 
-  function simulateError()   { stopTimer(); state='error';   document.getElementById('playerBar').classList.remove('visible'); document.getElementById('edgeTab').classList.remove('visible'); document.getElementById('offlineBar').classList.remove('visible'); document.getElementById('errorBar').classList.add('visible'); syncAll(); }
-  function simulateOffline() { stopTimer(); state='offline'; document.getElementById('playerBar').classList.remove('visible'); document.getElementById('edgeTab').classList.remove('visible'); document.getElementById('errorBar').classList.remove('visible'); document.getElementById('offlineBar').classList.add('visible'); syncAll(); }
+  let statusToastTimer = null;
+  function showStatusToast() {
+    stopTimer();
+    state='error';
+    document.getElementById('playerBar').classList.remove('visible');
+    document.getElementById('edgeTab').classList.remove('visible');
+    document.getElementById('statusToast').classList.add('visible');
+    syncAll();
+    clearTimeout(statusToastTimer);
+    statusToastTimer = setTimeout(closePlayer, 3000);
+  }
+  function simulateError()   { showStatusToast(); }
+  function simulateOffline() { showStatusToast(); }
 
   function syncAll() { syncPlayBtn(); syncFooterIcon(); syncWave(); }
 
   function syncPlayBtn() {
-    const playing=state==='playing', loading=state==='loading';
+    const playing=state==='playing', loading=state==='loading', ended=state==='ended';
     ['M','D'].forEach(s=>{
-      document.getElementById('iconPlay'+s).style.display  = (!playing&&!loading)?'block':'none';
-      document.getElementById('iconPause'+s).style.display = playing?'block':'none';
-      document.getElementById('btnSpinner'+s).style.display= loading?'block':'none';
+      document.getElementById('iconPlay'+s).style.display   = (!playing&&!loading&&!ended)?'block':'none';
+      document.getElementById('iconPause'+s).style.display  = playing?'block':'none';
+      document.getElementById('iconReplay'+s).style.display = ended?'block':'none';
+      document.getElementById('btnSpinner'+s).style.display  = loading?'block':'none';
     });
   }
 
   function syncFooterIcon() {
-    const playing=state==='playing', paused=(state==='paused'||state==='loading');
+    const playing=state==='playing', paused=(state==='paused'||state==='loading'||state==='ended');
     document.querySelector('.tts-svg-inactive').style.display = (!playing&&!paused)?'block':'none';
     document.querySelector('.tts-svg-playing').style.display  = playing?'block':'none';
     document.querySelector('.tts-svg-paused').style.display   = paused?'block':'none';
