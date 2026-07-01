@@ -306,9 +306,9 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
 }
 .player-open-handle {
   position: absolute;
-  top: 50%;
+  top: 0;
   right: -18px;
-  width: 34px;
+  width: 24px;
   height: 82px;
   background: linear-gradient(180deg, rgba(16,22,31,0.98), rgba(7,11,18,0.98));
   border: 1px solid rgba(124, 170, 214, 0.2);
@@ -321,7 +321,6 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
   justify-content: center;
   color: #fff;
   z-index: 2;
-  transform: translateY(-50%);
   will-change: transform, filter;
   transition: margin-right 0.2s ease, filter 0.2s ease, background-color 0.2s ease;
 }
@@ -347,10 +346,10 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
   animation: collapse-handle-cue 0.55s cubic-bezier(0.22, 1, 0.36, 1) 1;
 }
 @keyframes collapse-handle-cue {
-  0%   { transform: translateY(-50%) translateX(0); }
-  35%  { transform: translateY(-50%) translateX(-5px); }
-  70%  { transform: translateY(-50%) translateX(1px); }
-  100% { transform: translateY(-50%) translateX(0); }
+  0%   { transform: translateX(0); }
+  35%  { transform: translateX(-5px); }
+  70%  { transform: translateX(1px); }
+  100% { transform: translateX(0); }
 }
 .collapse-btn {
   background: rgba(255,255,255,0.06);
