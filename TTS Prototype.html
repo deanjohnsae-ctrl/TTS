@@ -260,6 +260,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
   opacity: 0;
   overflow: visible;
   transition: transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease;
+  touch-action: pan-y;
 }
 .player-bar.visible { transform: translateX(0); opacity: 1; }
 .player-title-row {
@@ -1034,6 +1035,104 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
     document.getElementById('edgeWave').classList.toggle('playing',playing);
   }
   window.addEventListener('resize', syncTitleMarquee);
+
+  /* ── Mobile swipe gestures: swipe-left on the player docks it, swipe-right
+     on the collapsed edge-tab expands it back. Touch-only; mirrors the
+     existing tap-based collapse/expand without changing desktop behavior. ── */
+  const SWIPE_DOCK_EXCLUDE = '.progress-track, .ctrl-btn, .play-pause-btn, .speed-pill, .close-btn, .collapse-btn, .speed-menu, .speed-option';
+  const SWIPE_SLOP = 10;
+  const DOCK_TRANSITION = 'transform 0.35s cubic-bezier(0.4,0,0.2,1)';
+
+  function attachSwipeDock() {
+    const bar = document.getElementById('playerBar');
+    bar.addEventListener('pointerdown', (e) => {
+      if (e.pointerType !== 'touch') return;
+      if (!bar.classList.contains('visible')) return;
+      if (e.target.closest(SWIPE_DOCK_EXCLUDE)) return;
+
+      const startX = e.clientX, startY = e.clientY, startTime = performance.now();
+      let dragging = false, dx = 0;
+      bar.setPointerCapture(e.pointerId);
+      bar.addEventListener('pointermove', onMove);
+      bar.addEventListener('pointerup', onUp);
+      bar.addEventListener('pointercancel', onCancel);
+
+      function onMove(ev) {
+        const rawDx = ev.clientX - startX, rawDy = ev.clientY - startY;
+        if (!dragging) {
+          if (Math.abs(rawDx) < SWIPE_SLOP && Math.abs(rawDy) < SWIPE_SLOP) return;
+          if (Math.abs(rawDx) <= Math.abs(rawDy)) { teardown(); return; } // vertical → let the page scroll
+          dragging = true;
+          bar.style.transition = 'none';
+        }
+        dx = Math.min(0, rawDx);
+        bar.style.transform = `translateX(${dx}px)`;
+      }
+      function onUp() {
+        teardown();
+        if (!dragging) return;
+        const elapsed = performance.now() - startTime;
+        const velocity = dx / elapsed;
+        const commit = dx < -70 || (dx < -20 && velocity < -0.5);
+        bar.style.transition = DOCK_TRANSITION;
+        bar.style.transform = commit ? 'translateX(-120%)' : 'translateX(0)';
+        bar.addEventListener('transitionend', function te() {
+          bar.removeEventListener('transitionend', te);
+          bar.style.transition = '';
+          bar.style.transform = '';
+          if (commit) collapsePlayer();
+        }, { once: true });
+      }
+      function onCancel() {
+        teardown();
+        if (!dragging) return;
+        bar.style.transition = '';
+        bar.style.transform = '';
+      }
+      function teardown() {
+        bar.removeEventListener('pointermove', onMove);
+        bar.removeEventListener('pointerup', onUp);
+        bar.removeEventListener('pointercancel', onCancel);
+      }
+    });
+  }
+
+  function attachSwipeExpand() {
+    const tab = document.getElementById('edgeTab');
+    tab.addEventListener('pointerdown', (e) => {
+      if (e.pointerType !== 'touch') return;
+
+      const startX = e.clientX, startY = e.clientY, startTime = performance.now();
+      let dragging = false;
+      tab.setPointerCapture(e.pointerId);
+      tab.addEventListener('pointermove', onMove);
+      tab.addEventListener('pointerup', onUp);
+      tab.addEventListener('pointercancel', teardown);
+
+      function onMove(ev) {
+        const dx = ev.clientX - startX, dy = ev.clientY - startY;
+        if (Math.abs(dx) < SWIPE_SLOP && Math.abs(dy) < SWIPE_SLOP) return;
+        if (Math.abs(dx) <= Math.abs(dy)) { teardown(); return; } // vertical → ignore
+        dragging = true;
+      }
+      function onUp(ev) {
+        teardown();
+        if (!dragging) return;
+        const dx = ev.clientX - startX;
+        const elapsed = performance.now() - startTime;
+        const velocity = dx / elapsed;
+        if (dx > 40 || (dx > 15 && velocity > 0.5)) expandPlayer();
+      }
+      function teardown() {
+        tab.removeEventListener('pointermove', onMove);
+        tab.removeEventListener('pointerup', onUp);
+        tab.removeEventListener('pointercancel', teardown);
+      }
+    });
+  }
+
+  attachSwipeDock();
+  attachSwipeExpand();
 </script>
 </body>
 </html>
