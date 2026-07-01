@@ -306,8 +306,8 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
 }
 .player-open-handle {
   position: absolute;
-  top: 10px;
-  right: -18px;
+  top: 14px;
+  right: -32px;
   width: 34px;
   height: 48px;
   background: linear-gradient(180deg, rgba(16,22,31,0.98), rgba(7,11,18,0.98));
@@ -335,12 +335,24 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
   width: 14px;
   height: 14px;
   transition: transform 0.2s ease;
+  animation: chevron-hint-nudge 1.8s ease-in-out infinite;
 }
 .player-open-handle:hover svg {
+  animation-play-state: paused;
   transform: translateX(-3px);
 }
 .player-open-handle:active svg {
+  animation-play-state: paused;
   transform: translateX(-3px) scale(0.92);
+}
+@keyframes chevron-hint-nudge {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-3px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .player-open-handle svg {
+    animation: none;
+  }
 }
 .player-bar.visible .player-open-handle {
   animation: collapse-handle-cue 0.55s cubic-bezier(0.22, 1, 0.36, 1) 1;
@@ -386,10 +398,6 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
 }
 .progress-row {
   gap: 6px;
-  padding: 8px 10px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.07);
 }
 .progress-wave {
   display: flex;
@@ -433,10 +441,6 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
 .mobile-top-row .transport,
 .desktop-controls .transport {
   align-self: flex-start;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 999px;
-  padding: 6px 10px;
 }
 @media (min-width: 768px) {
   .player-bar {
@@ -462,17 +466,9 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
   }
   .desktop-controls .transport {
     grid-area: transport;
-    background: none;
-    border: none;
-    border-radius: 0;
-    padding: 0;
   }
   .desktop-controls .progress-row {
     grid-area: progress;
-    background: none;
-    border: none;
-    border-radius: 0;
-    padding: 0;
   }
   .desktop-controls > .side-controls {
     grid-area: side;
@@ -485,7 +481,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #ccc; }
     bottom: auto;
   }
   .player-open-handle {
-    top: 10px;
+    top: 14px;
     right: -35px;
     width: 34px;
     height: 48px;
